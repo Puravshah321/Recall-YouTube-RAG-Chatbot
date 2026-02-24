@@ -1,0 +1,11 @@
+langchain
+langchain-community
+langchain-groq
+langchain-google-genai
+faiss-cpu
+python-dotenv
+langchain-text-splitters
+langchain-huggingface
+streamlit
+google-api-python-client
+youtube-transcript-api
