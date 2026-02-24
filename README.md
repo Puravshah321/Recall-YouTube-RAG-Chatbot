@@ -12,9 +12,9 @@
 
 **Recall** is an end-to-end **Retrieval-Augmented Generation (RAG)** application that transforms any YouTube video into an intelligent, conversational knowledge system.
 
-You paste a YouTube URL → Recall fetches the transcript via the **YouTube Data API v3** → builds a semantic vector index using local HuggingFace embeddings → and lets you chat with that video in plain English.
+You paste a YouTube URL → Recall fetches the transcript via the **YouTube Data API v3** → builds a semantic vector index using HuggingFace embeddings → and lets you chat with that video through a premium, dark-themed AI interface.
 
-Embeddings are generated **locally** using `BAAI/bge-small-en-v1.5` (no API cost, full privacy). Inference is handled by **Groq's free cloud API** on their LPU hardware for blazing-fast responses. Transcript fetching is powered by the **official Google Cloud YouTube Data API v3**, with automatic fallback tiers to maximise coverage.
+Embeddings are handled via the **HuggingFace Inference API** (keeping local RAM usage low). Inference is powered by **Groq's LPU hardware** running `llama-3.1-8b-instant` for blazing-fast responses. Transcript fetching is powered by the **official Google Cloud YouTube Data API v3**, with an automatic 4-tier fallback system for maximum reliability.
 
 <br>
 
@@ -172,9 +172,7 @@ Building a Docker image with Ollama baked in also ballooned the container size t
 
 <br>
 
-### Stage 4 — Groq (Cloud LLM, Local Embeddings)
-
-The solution was to keep the **local embedding pipeline unchanged** (HuggingFace + FAISS runs fine in 512 MB) and replace only the LLM call with **Groq's free cloud API**.
+The solution was to keep the **vector indexing logic** (FAISS + HuggingFace) and replace only the LLM call with **Groq's free cloud API**.
 
 | Component | Before | After |
 |---|---|---|
@@ -182,7 +180,7 @@ The solution was to keep the **local embedding pipeline unchanged** (HuggingFace
 
 Groq runs inference on custom **LPU (Language Processing Unit)** hardware — faster than local CPU inference, requires zero server-side RAM, and comes with a generous free tier.
 
-**However:** the initial model used was `llama3-70b-8192`, which was later **decommissioned by Groq**. The app began throwing `model_decommissioned` errors. Updated to `llama-3.1-8b-instant` — the current stable replacement.
+**Note:** The UI has been completely redesigned with a **premium dark-mode glassmorphism** aesthetic, removing emojis and using minimalist typography for a high-end feel. The metadata dashboard now accurately reflects the usage of Groq and HuggingFace services.
 
 <br>
 
@@ -381,12 +379,11 @@ Query → [Retrieval ‖ Passthrough] → Prompt → LLM → String Output
 
 | Feature | Detail |
 |---|---|
-| Sidebar input | Accepts the YouTube URL |
-| Initialize Engine | Triggers the full RAG pipeline build |
-| Video preview | Embedded inline after URL is loaded |
-| Stat cards | Live message count + engine status |
-| Chat interface | `st.chat_input` + `st.chat_message` with per-message timestamps |
-| Clear Chat | Resets conversation without rebuilding the engine |
+| Premium UI | Glassmorphism-inspired dark theme with Inter/Outfit typography |
+| Dynamic Landing | Centered initialization board with real-time feedback |
+| Metadata Dashboard | Live stats for context engine, language model, and message count |
+| Video Interface | Embedded video player with a dedicated context-aware chat panel |
+| Interaction | Smooth button hover states and optimized input handling |
 
 <br>
 
