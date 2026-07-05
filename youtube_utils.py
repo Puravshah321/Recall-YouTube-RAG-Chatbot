@@ -98,12 +98,17 @@ def get_transcript(video_id):
 
         # ── 3. Last resort: any available language via transcript API ──────────
         try:
-            from youtube_transcript_api import YouTubeTranscriptApi, TranscriptList
+            from youtube_transcript_api import YouTubeTranscriptApi
 
             transcript_list_obj = YouTubeTranscriptApi.list_transcripts(video_id)
             transcript = transcript_list_obj.find_transcript(
                 [t.language_code for t in transcript_list_obj]
             )
+
+            # Translate to English if the transcript is not already in English and is translatable
+            if not transcript.language_code.startswith("en") and transcript.is_translatable:
+                transcript = transcript.translate("en")
+
             segments = transcript.fetch()
             transcript_text = " ".join(
                 html.unescape(seg["text"]) for seg in segments
